@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TukTuk Shop Meta Ads Simulator V6</title>
+<style>
+:root{
+  --bg:#07111f;--card:#0d1a2b;--card2:#101f33;--line:#20344d;--text:#e9f1fb;
+  --muted:#91a4ba;--accent:#4ade80;--blue:#60a5fa;--cyan:#22d3ee;--amber:#fbbf24;
+  --red:#fb7185;--purple:#a78bfa;--shadow:0 12px 40px rgba(0,0,0,.25)
+}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,#12243a 0,#07111f 38%,#050c16 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}.wrap{max-width:1250px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:18px}
+h1{font-size:25px;margin:0 0 5px}.sub{color:var(--muted);font-size:13px}.pill{border:1px solid var(--line);background:#0b1828;padding:8px 12px;border-radius:999px;color:#b9c9da;font-size:12px}
+.tabs{display:flex;gap:8px;margin-bottom:15px}.tab,.obj button,.preset{border:1px solid var(--line);background:#0b1727;color:#b7c8db;padding:10px 13px;border-radius:10px;cursor:pointer}.tab.active,.obj button.active{background:#15304a;border-color:#2d6a8c;color:#fff}.panel{display:none}.panel.active{display:block}
+.grid{display:grid;grid-template-columns:1.05fr 1.4fr;gap:15px}.card{background:linear-gradient(180deg,rgba(16,31,51,.96),rgba(10,23,38,.96));border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);margin-bottom:15px}
+.card h2{font-size:15px;margin:0 0 13px}.hint{font-size:12px;color:var(--muted);line-height:1.55}
+.obj{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.obj button{font-size:12px}.objective-info{margin-top:10px;padding:11px;border:1px solid #23425d;background:#0b1929;border-radius:12px;font-size:12px;line-height:1.55}
+.controls{display:grid;gap:13px}.row label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}.val{color:var(--cyan);font-weight:700}input[type=range]{width:100%;accent-color:#38bdf8}
+
+.effect-guide{margin-bottom:4px;padding:12px;border:1px solid #23425d;background:#091827;border-radius:12px;font-size:12px;line-height:1.5}
+.effect-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}
+.effect-grid>div{padding:9px;background:#0c1d2e;border:1px solid #1d344b;border-radius:9px}
+.effect-grid strong{display:block;color:#eaf3fc;margin-bottom:3px}
+.effect-grid span{display:block;color:#9fb2c5}
+input.manual{width:100%;padding:10px 11px;border:1px solid #2a4059;border-radius:10px;background:#081522;color:#e9f1fb;outline:none;font-weight:700}
+input.manual:focus{border-color:#38bdf8;box-shadow:0 0 0 3px rgba(56,189,248,.10)}
+.money-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.metric{padding:12px;border:1px solid var(--line);background:#0a1726;border-radius:13px}.metric .k{font-size:11px;color:var(--muted)}.metric .v{font-size:21px;font-weight:800;margin-top:4px}.green{color:var(--accent)}.red{color:var(--red)}.amber{color:var(--amber)}.blue{color:var(--blue)}
+.funnel{display:grid;gap:8px}.frow{display:grid;grid-template-columns:125px 1fr 80px;align-items:center;gap:9px;font-size:12px}.bar{height:10px;background:#07111c;border-radius:99px;overflow:hidden;border:1px solid #1b2c40}.fill{height:100%;background:linear-gradient(90deg,#22d3ee,#60a5fa);border-radius:99px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.mini{padding:12px;background:#0a1726;border:1px solid var(--line);border-radius:12px}.mini b{display:block;font-size:17px;margin-top:4px}.mini span{font-size:11px;color:var(--muted)}
+.action{padding:14px;border-radius:13px;border:1px solid var(--line);background:#0a1726;line-height:1.55;font-size:13px}.action strong{font-size:15px}.action.scale{border-color:#286b45}.action.kill{border-color:#713345}.action.hold{border-color:#735b22}
+.log{font-size:12px;line-height:1.65;display:grid;gap:7px}.log div{padding:9px 11px;background:#0a1726;border-left:3px solid #31506e;border-radius:8px}
+.presetbar{display:flex;gap:7px;flex-wrap:wrap}.preset{font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:#9db0c4}
+
+.cost-table{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0a1726;font-size:12px}
+.cost-head,.cost-row{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:8px;align-items:center;padding:10px 11px}
+.cost-head{background:#102238;color:#9fb3c9;font-size:11px}.cost-row{border-top:1px solid #182b40}.cost-row b{text-align:right}.cost-row.total{background:#101d2c;font-size:12px}.cost-row.total b{color:#fb7185}
+@media(max-width:650px){.cost-head,.cost-row{grid-template-columns:1.35fr repeat(3,.9fr);font-size:10px;padding:9px 7px}.cost-head{font-size:9px}}
+.guide{line-height:1.7;font-size:13px}.guide h3{font-size:15px}.tag{display:inline-block;padding:3px 7px;border-radius:7px;background:#132a40;border:1px solid #26455e;font-size:11px;margin:2px}
+.quiz button{margin-top:7px;width:100%;text-align:left}.answer{display:none;margin-top:8px;padding:10px;background:#0a1726;border-radius:9px;font-size:12px}
+.form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;padding:10px;border:1px solid #2a4059;border-radius:9px;background:#081522;color:var(--text);min-width:0}.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{border:1px solid #31516d;background:#15304a;color:#fff;padding:10px 13px;border-radius:9px;cursor:pointer}.btn.primary{background:#17633b;border-color:#248653}.btn.danger{background:#512334;border-color:#85374e}.data-table{overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:12px}.data-table table{min-width:760px}.empty{padding:18px;color:var(--muted);font-size:13px}.notice{padding:11px;border:1px solid #31516d;background:#0a1a2b;border-radius:10px;font-size:12px;line-height:1.6;margin:10px 0}.result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.result{padding:12px;background:#0a1726;border:1px solid var(--line);border-radius:10px}.result span{font-size:11px;color:var(--muted);display:block}.result b{font-size:19px;display:block;margin-top:4px}.positive{color:var(--accent)}.negative{color:var(--red)}
+@media(max-width:650px){.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.field input,.field select{font-size:14px}}
+@media(max-width:850px){.grid,.two{grid-template-columns:1fr}.money-grid{grid-template-columns:repeat(2,1fr)}.kpi-grid{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.frow{grid-template-columns:100px 1fr 65px}}
+@media(max-width:480px){.wrap{padding:11px}h1{font-size:21px}.money-grid{grid-template-columns:1fr 1fr}.obj{grid-template-columns:repeat(2,1fr)}.metric .v{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="credit-top">DEVELOPED BY TIPU</div><h1>🚀 Tuktuk Meta Ads Metrics Lab</h1><div class="sub">V6 • Simulator + Real Results + Product Profit + Investment + Reports</div></div>
+    <div class="pill">Educational model • Real Meta algorithm নয়</div>
+  </div>
+
+  <div class="tabs" style="flex-wrap:wrap">
+    <button class="tab active" data-tab="sim">📊 Simulator</button>
+    <button class="tab" data-tab="product">🧮 Product Profit</button>
+    <button class="tab" data-tab="cash">💰 Investment & Cash Flow</button>
+    <button class="tab" data-tab="actual">🧾 Actual Tracker</button>
+    <button class="tab" data-tab="compare">⚖️ Compare</button>
+    <button class="tab" data-tab="reports">📈 Reports / Export</button>
+    <button class="tab" data-tab="guide">🧠 Guide</button>
+    <button class="tab" data-tab="quiz">🎯 Practice</button>
+  </div>
+
+  <section id="sim" class="panel active">
+    <div class="card">
+      <h2>1. Campaign Objective</h2>
+      <div class="obj">
+        <button data-objective="Awareness">Awareness</button>
+        <button data-objective="Traffic">Traffic</button>
+        <button data-objective="Engagement">Engagement</button>
+        <button data-objective="Leads">Leads</button>
+        <button data-objective="Sales" class="active">Sales</button>
+        <button data-objective="Messages">Messages</button>
+      </div>
+      <div id="objectiveInfo" class="objective-info"></div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>2. Ad / Market Inputs</h2>
+          <div class="controls">
+            <div class="effect-guide">
+              <b>📌 এগুলো কীভাবে result বদলায়?</b>
+              <div class="effect-grid">
+                <div><strong>Creative / Hook ↑</strong><span>CTR ↑ → Clicks ↑ → সাধারণত Orders ↑</span></div>
+                <div><strong>Audience Broadness ↑</strong><span>CPM সাধারণত ↓ → Reach/Impressions ↑</span></div>
+                <div><strong>Competition / Season ↑</strong><span>CPM ↑ → একই budget-এ Impressions ↓</span></div>
+                <div><strong>Frequency / Fatigue ↑</strong><span>CTR ↓ + CPM ↑ → Performance ↓</span></div>
+                <div><strong>Landing Page Quality ↑</strong><span>Landing View/ATC efficiency ↑ → Orders ↑</span></div>
+                <div><strong>Offer Strength ↑</strong><span>ATC + Order rate ↑ → Conversion ↑</span></div>
+              </div>
+              <div class="hint">সহজভাবে: <b>Hook</b> মানুষকে ad-এ থামায়, <b>Broadness</b> reach-এর খরচে প্রভাব ফেলে, <b>Competition</b> auction cost বাড়ায়, <b>Fatigue</b> ad-এর freshness কমায়, <b>Landing Page</b> visitor-কে buyer বানাতে সাহায্য করে, আর <b>Offer</b> কেনার ইচ্ছা বাড়ায়।</div>
+            </div>
+            <div class="row"><label>Creative / Hook <span class="val" id="hookVal"></span></label><input id="hook" type="range" min="0" max="100" value="70"></div>
+            <div class="row"><label>Audience Broadness <span class="val" id="broadVal"></span></label><input id="broad" type="range" min="0" max="100" value="65"></div>
+            <div class="row"><label>Competition / Season <span class="val" id="compVal"></span></label><input id="comp" type="range" min="0" max="100" value="55"></div>
+            <div class="row"><label>Frequency / Fatigue <span class="val" id="fatigueVal"></span></label><input id="fatigue" type="range" min="0" max="100" value="25"></div>
+            <div class="row"><label>Landing Page Quality <span class="val" id="lpqVal"></span></label><input id="lpq" type="range" min="0" max="100" value="85"></div>
+            <div class="row"><label>Offer Strength <span class="val" id="offerVal"></span></label><input id="offer" type="range" min="0" max="100" value="70"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>3. COD Reality</h2>
+          <div class="controls">
+            <div class="row"><label>Order Confirmation Rate <span class="val" id="confirmVal"></span></label><input id="confirm" type="range" min="0" max="100" value="80"></div>
+            <div class="row"><label>Delivery Success Rate <span class="val" id="deliveryVal"></span></label><input id="delivery" type="range" min="0" max="100" value="85"></div>
+          </div>
+          <div class="hint" style="margin-top:10px">এখানে মনে রাখবেন: Raw Order ≠ Confirmed Order ≠ Delivered Order.</div>
+        </div>
+
+        <div class="card">
+          <h2>4. Business Numbers</h2>
+          <div class="controls">
+            <div class="row"><label>Daily Ad Budget (৳) <span class="val" id="budgetVal"></span></label><input id="budget" class="manual" type="number" min="0" step="100" value="1000"></div>
+            <div class="row"><label>AOV (Average Order Value) (৳) <span class="val" id="aovVal"></span></label><input id="aov" class="manual" type="number" min="0" step="50" value="900"></div>
+            <div class="row"><label>Product Cost / Delivered Order (৳) <span class="val" id="pcostVal"></span></label><input id="pcost" class="manual" type="number" min="0" step="10" value="350"></div>
+            <div class="row"><label>Delivery Cost / Confirmed Order (৳) <span class="val" id="dcostVal"></span></label><input id="dcost" class="manual" type="number" min="0" step="5" value="80"></div>
+            <div class="row"><label>Payment / Platform Fee (%) <span class="val" id="feeVal"></span></label><input id="fee" class="manual" type="number" min="0" step=".1" value="1"></div>
+            <div class="row"><label>Other Cost / Delivered Order (৳) <span class="val" id="otherVal"></span></label><input id="other" class="manual" type="number" min="0" step="5" value="20"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>5. Decision Targets</h2>
+          <div class="controls">
+            <div class="row"><label>Target Delivered Orders / Day <span class="val" id="targetOrdersVal"></span></label><input id="targetOrders" class="manual" type="number" min="1" step="1" value="10"></div>
+            <div class="row"><label>Target CPA (Cost Per Acquisition) (৳) <span class="val" id="targetCPAVal"></span></label><input id="targetCPA" class="manual" type="number" min="0" step="10" value="250"></div>
+          </div>
+          <div class="hint" style="margin-top:10px">Target CPA নিজের unit economics অনুযায়ী সেট করুন। Universal “good CPA” বলে কিছু নেই.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>💰 Today’s Business Dashboard</h2>
+          <div class="money-grid">
+            <div class="metric"><div class="k">Impressions</div><div class="v" id="impressions">—</div></div>
+            <div class="metric"><div class="k">Clicks</div><div class="v" id="clicks">—</div></div>
+            <div class="metric"><div class="k">Raw Orders</div><div class="v" id="raw">—</div></div>
+            <div class="metric"><div class="k">Delivered</div><div class="v green" id="delivered">—</div></div>
+            <div class="metric"><div class="k">Revenue</div><div class="v blue" id="revenue">—</div></div>
+            <div class="metric"><div class="k">Total Cost</div><div class="v" id="totalCost">—</div></div>
+            <div class="metric"><div class="k">Net Profit / Loss</div><div class="v" id="profit">—</div></div>
+            <div class="metric"><div class="k">Real CPA (Cost Per Acquisition)</div><div class="v amber" id="realCPA">—</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>📌 Unit Economics</h2>
+          <div class="kpi-grid">
+            <div class="mini"><span>Break-even CPA (Cost Per Acquisition)</span><b id="beCPA">—</b></div>
+            <div class="mini"><span>Break-even ROAS</span><b id="beROAS">—</b></div>
+            <div class="mini"><span>Profit / Delivered</span><b id="profitPer">—</b></div>
+            <div class="mini"><span>Ad Cost / Revenue</span><b id="adPct">—</b></div>
+            <div class="mini"><span>Confirmation</span><b id="confirmOut">—</b></div>
+            <div class="mini"><span>Delivery Success</span><b id="deliveryOut">—</b></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>🔻 Full Funnel</h2>
+          <div class="funnel">
+            <div class="frow"><b>Impressions</b><div class="bar"><div class="fill" id="bImp"></div></div><span id="fImp">—</span></div>
+            <div class="frow"><b>Clicks</b><div class="bar"><div class="fill" id="bClick"></div></div><span id="fClick">—</span></div>
+            <div class="frow"><b>Landing Views</b><div class="bar"><div class="fill" id="bLP"></div></div><span id="fLP">—</span></div>
+            <div class="frow"><b>Add to Cart</b><div class="bar"><div class="fill" id="bATC"></div></div><span id="fATC">—</span></div>
+            <div class="frow"><b>Raw Orders</b><div class="bar"><div class="fill" id="bRaw"></div></div><span id="fRaw">—</span></div>
+            <div class="frow"><b>Confirmed</b><div class="bar"><div class="fill" id="bConf"></div></div><span id="fConf">—</span></div>
+            <div class="frow"><b>Delivered</b><div class="bar"><div class="fill" id="bDel"></div></div><span id="fDel">—</span></div>
+          </div>
+        </div>
+
+        <div class="two">
+          <div class="card">
+            <h2>🩺 Bottleneck Diagnosis</h2>
+            <div id="diagnosis" class="action"></div>
+          </div>
+          <div class="card">
+            <h2>🎛️ Campaign Decision</h2>
+            <div id="decision" class="action"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>📅 Projection</h2>
+          <div class="kpi-grid">
+            <div class="mini"><span>7-Day Revenue</span><b id="rev7">—</b></div>
+            <div class="mini"><span>7-Day Profit</span><b id="prof7">—</b></div>
+            <div class="mini"><span>30-Day Revenue</span><b id="rev30">—</b></div>
+            <div class="mini"><span>30-Day Profit</span><b id="prof30">—</b></div>
+            <div class="mini"><span>7-Day Delivered</span><b id="del7">—</b></div>
+            <div class="mini"><span>30-Day Delivered</span><b id="del30">—</b></div>
+          </div>
+          <h3 style="margin:16px 0 8px;font-size:14px">💰 খরচের হিসাব — প্রতিদিন / ৭ দিন / ৩০ দিন</h3>
+          <div class="cost-table">
+            <div class="cost-head"><b>খরচ</b><b>প্রতিদিন</b><b>৭ দিন</b><b>৩০ দিন</b></div>
+            <div class="cost-row"><span>📢 Marketing / Ad Cost</span><b id="adCostD">—</b><b id="adCost7">—</b><b id="adCost30">—</b></div>
+            <div class="cost-row"><span>📦 Product Purchase Cost</span><b id="prodCostD">—</b><b id="prodCost7">—</b><b id="prodCost30">—</b></div>
+            <div class="cost-row"><span>🚚 Delivery Cost</span><b id="shipCostD">—</b><b id="shipCost7">—</b><b id="shipCost30">—</b></div>
+            <div class="cost-row"><span>💳 Platform Fee</span><b id="feeCostD">—</b><b id="feeCost7">—</b><b id="feeCost30">—</b></div>
+            <div class="cost-row"><span>🧾 Other Cost</span><b id="otherCostD">—</b><b id="otherCost7">—</b><b id="otherCost30">—</b></div>
+            <div class="cost-row total"><span>🔴 Total Business Cost</span><b id="totalCostD">—</b><b id="totalCost7">—</b><b id="totalCost30">—</b></div>
+          </div>
+          <div class="hint" style="margin-top:10px">Product Purchase Cost = Delivered Order × Product Cost. Marketing Cost = Daily Ad Budget. তাই শুধু ad spend না, product + delivery + fee + other cost মিলিয়েই আসল business cost দেখা যাবে। Projection = আজকের simulated result × দিন।</div>
+        </div>
+
+        <div class="card">
+          <h2>🧪 Quick Presets</h2>
+          <div class="presetbar">
+            <button class="preset" data-preset="bad">🔴 Bad Campaign</button>
+            <button class="preset" data-preset="normal">🟡 Normal</button>
+            <button class="preset" data-preset="winner">🟢 Winner</button>
+            <button class="preset" data-preset="reset">↩ Reset</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>🧠 Causality Log — “কেন এমন হলো?”</h2>
+          <div id="log" class="log"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="product" class="panel">
+    <div class="card"><h2>🧮 Product Profit Calculator</h2><div class="hint">একটি পণ্য বিক্রি করলে সব খরচ বাদে কত থাকবে এবং break-even price কত—হিসাব করুন। এখানে Ad CPA বলতে প্রতি delivered order-এর বিজ্ঞাপন খরচ বোঝানো হয়েছে।</div>
+      <div class="form-grid">
+        <div class="field"><label>Product Name</label><input id="pName" placeholder="যেমন: Smart Bottle" /></div>
+        <div class="field"><label>Selling Price (৳)</label><input id="pPrice" type="number" min="0" value="900" /></div>
+        <div class="field"><label>Purchase Cost (৳)</label><input id="pCost" type="number" min="0" value="350" /></div>
+        <div class="field"><label>Ad Cost / Delivered Order (৳)</label><input id="pAd" type="number" min="0" value="180" /></div>
+        <div class="field"><label>Delivery Cost (৳)</label><input id="pShip" type="number" min="0" value="80" /></div>
+        <div class="field"><label>Packaging Cost (৳)</label><input id="pPack" type="number" min="0" value="20" /></div>
+        <div class="field"><label>Platform / Payment Fee (%)</label><input id="pFee" type="number" min="0" step="0.1" value="1" /></div>
+        <div class="field"><label>Other Cost / Delivered (৳)</label><input id="pOther" type="number" min="0" value="10" /></div>
+        <div class="field"><label>Return/RTO Loss Allowance / Delivered (৳)</label><input id="pRto" type="number" min="0" value="25" /></div>
+      </div><div class="btnrow"><button class="btn primary" id="calcProduct">Calculate Product</button><button class="btn" id="saveProduct">Save Product</button></div>
+      <div class="result-grid" style="margin-top:14px"><div class="result"><span>Net Profit / Delivered</span><b id="pNet">—</b></div><div class="result"><span>Net Margin</span><b id="pMargin">—</b></div><div class="result"><span>Break-even Selling Price</span><b id="pBreak">—</b></div><div class="result"><span>Max Break-even Ad CPA</span><b id="pMaxCPA">—</b></div></div><div id="productMsg" class="notice">Enter your actual costs, then calculate. Return/RTO allowance should reflect your average loss spread across delivered orders.</div>
+    </div><div class="card"><h2>Saved Products</h2><div id="productTable" class="data-table"></div></div>
+  </section>
+
+  <section id="cash" class="panel">
+    <div class="card"><h2>💰 Investment & Cash Flow</h2><div class="notice">Cash flow এবং profit এক জিনিস নয়। COD payout pending থাকলে profit থাকলেও হাতে cash কম থাকতে পারে। নিচের মানগুলো আপনার বর্তমান অবস্থা অনুযায়ী দিন।</div>
+      <div class="form-grid">
+        <div class="field"><label>Starting Capital (৳)</label><input id="cCapital" type="number" min="0" value="50000" /></div>
+        <div class="field"><label>Product Stock Purchase (৳)</label><input id="cStock" type="number" min="0" value="15000" /></div>
+        <div class="field"><label>Ad Spend Paid (৳)</label><input id="cAds" type="number" min="0" value="5000" /></div>
+        <div class="field"><label>Delivery + Packaging Paid (৳)</label><input id="cOps" type="number" min="0" value="2500" /></div>
+        <div class="field"><label>Other Expenses Paid (৳)</label><input id="cOther" type="number" min="0" value="1000" /></div>
+        <div class="field"><label>COD / Customer Money Received (৳)</label><input id="cReceived" type="number" min="0" value="12000" /></div>
+        <div class="field"><label>COD Payout Pending (৳)</label><input id="cPending" type="number" min="0" value="8000" /></div>
+        <div class="field"><label>Supplier Payable (৳)</label><input id="cPayable" type="number" min="0" value="3000" /></div>
+        <div class="field"><label>Cash currently in hand/bank (৳) (optional override)</label><input id="cCashOverride" type="number" min="0" placeholder="Blank = auto estimate" /></div>
+      </div><div class="btnrow"><button class="btn primary" id="calcCash">Calculate Cash Flow</button><button class="btn" id="saveCash">Save Snapshot</button></div>
+      <div class="result-grid" style="margin-top:14px"><div class="result"><span>Available Cash (estimated)</span><b id="cAvailable">—</b></div><div class="result"><span>Total Paid Out</span><b id="cPaid">—</b></div><div class="result"><span>Cash + Pending COD</span><b id="cLiquid">—</b></div><div class="result"><span>Net Position after Payable</span><b id="cNet">—</b></div></div><div id="cashMsg" class="notice"></div>
+    </div><div class="card"><h2>Cash Flow Snapshots</h2><div id="cashTable" class="data-table"></div></div>
+  </section>
+
+  <section id="actual" class="panel">
+    <div class="card"><h2>🧾 Actual Ads & Order Tracker</h2><div class="notice">Meta Ads Manager, website/COD dashboard এবং courier-এর বাস্তব ডেটা এখানে নিজে লিখুন। V6 Meta-তে লগইন করে live data টানে না। Profit estimate-এ product cost ও packaging delivered order অনুযায়ী, delivery/failed-order cost আলাদাভাবে ধরা হয়।</div>
+      <div class="form-grid">
+        <div class="field"><label>Date</label><input id="aDate" type="date" /></div><div class="field"><label>Campaign / Product</label><input id="aCampaign" placeholder="Campaign or product name" /></div><div class="field"><label>Ad Spend (৳)</label><input id="aSpend" type="number" min="0" value="1000" /></div>
+        <div class="field"><label>Revenue from Delivered Orders (৳)</label><input id="aRevenue" type="number" min="0" value="5000" /></div><div class="field"><label>Raw Orders</label><input id="aRaw" type="number" min="0" value="12" /></div><div class="field"><label>Confirmed Orders</label><input id="aConfirmed" type="number" min="0" value="10" /></div>
+        <div class="field"><label>Delivered Orders</label><input id="aDelivered" type="number" min="0" value="8" /></div><div class="field"><label>Cancelled / Failed</label><input id="aCancelled" type="number" min="0" value="2" /></div><div class="field"><label>Returned / RTO Orders</label><input id="aReturned" type="number" min="0" value="1" /></div>
+        <div class="field"><label>Product Cost / Delivered (৳)</label><input id="aProductCost" type="number" min="0" value="220" /></div><div class="field"><label>Delivery Cost per Confirmed Order (৳)</label><input id="aDeliveryCost" type="number" min="0" value="80" /></div><div class="field"><label>Packaging / Delivered (৳)</label><input id="aPackaging" type="number" min="0" value="20" /></div>
+        <div class="field"><label>Platform Fee (%)</label><input id="aFee" type="number" min="0" step="0.1" value="1" /></div><div class="field"><label>Other Cost / Delivered (৳)</label><input id="aOther" type="number" min="0" value="15" /></div><div class="field"><label>Extra failed/RTO cost total (৳)</label><input id="aRtoCost" type="number" min="0" value="100" /></div>
+      </div><div class="btnrow"><button class="btn primary" id="saveActual">Calculate & Save Actual Day</button><button class="btn" id="clearActualForm">Clear Form</button></div><div id="actualPreview" class="notice">Fill in actual results, then save the daily record.</div>
+    </div><div class="card"><h2>Saved Actual Records</h2><div class="btnrow"><button class="btn" id="exportActual">Export Actual CSV</button><button class="btn" id="deleteActualAll">Delete All Actual Records</button></div><div id="actualTable" class="data-table"></div></div>
+  </section>
+
+  <section id="compare" class="panel">
+    <div class="card"><h2>⚖️ Campaign Comparison</h2><div class="hint">Actual Tracker-এ সংরক্ষিত campaign/product records-এর net profit, delivered CPA ও ROAS তুলনা করুন। Campaign name একই হলে তারিখভিত্তিক রেকর্ডগুলো একত্রে যোগ করা হবে না; প্রতিটি record আলাদাভাবে দেখানো হবে।</div><div id="compareSummary" class="result-grid" style="margin-top:12px"></div><div id="compareTable" class="data-table"></div></div>
+    <div class="card"><h2>🧭 Simulator vs Actual</h2><div class="notice">Simulator একটি model-based estimate; Actual Tracker-এ তোমার বাস্তব ফল। একই সময়সীমা ও একই খরচের সংজ্ঞা ব্যবহার না করলে সরাসরি তুলনা ভুল হতে পারে।</div><div class="result-grid"><div class="result"><span>Simulator Net Profit / Day</span><b id="simProfitCompare">—</b></div><div class="result"><span>Actual Average Net Profit / Record</span><b id="actualProfitCompare">—</b></div><div class="result"><span>Actual Average Delivered CPA</span><b id="actualCpaCompare">—</b></div><div class="result"><span>Actual Average ROAS</span><b id="actualRoasCompare">—</b></div></div></div>
+  </section>
+
+  <section id="reports" class="panel">
+    <div class="card"><h2>📈 Reports & Backup</h2><div class="notice">Data এই browser/device-এর local storage-এ থাকে। Browser data clear করলে হারাতে পারে। নিয়মিত backup CSV export করে রাখুন। অন্য device-এ auto-sync হয় না।</div><div class="btnrow"><button class="btn primary" id="exportAll">Export All Actual Data CSV</button><button class="btn" id="exportProducts">Export Products CSV</button><button class="btn" id="exportCash">Export Cash Flow CSV</button><button class="btn" id="backupJson">Download Full Backup JSON</button><label class="btn" for="restoreJson" style="cursor:pointer">Restore Backup JSON</label><input id="restoreJson" type="file" accept="application/json,.json" style="display:none" /></div><div id="reportSummary" class="result-grid" style="margin-top:14px"></div><div class="card" style="margin-top:14px"><h2>Business Notes</h2><div class="field"><label>Notes / next action</label><textarea id="businessNotes" rows="4" style="width:100%;padding:10px;border:1px solid #2a4059;border-radius:9px;background:#081522;color:var(--text)" placeholder="যেমন: Bottle campaign-এ delivered CPA কমাতে নতুন creative test... "></textarea></div><div class="btnrow"><button class="btn primary" id="saveNotes">Save Notes</button></div><div id="notesStatus" class="hint"></div></div></div>
+  </section>
+
+  <section id="guide" class="panel">
+    <div class="card guide">
+      <h2>🧠 Tuktuk-এর জন্য এই Simulator কীভাবে পড়বেন</h2>
+      <h3>1) Sales objective কখন?</h3>
+      <p>Website/COD purchase বাড়ানো যদি মূল লক্ষ্য হয়, এবং purchase tracking ঠিকভাবে কাজ করে, তাহলে <span class="tag">Sales</span> objective-ই সাধারণত সবচেয়ে relevant starting point.</p>
+      <h3>2) কোন metric দেখে decision নেবেন?</h3>
+      <p><b>CTR/CPC</b> = ad attention ও traffic quality বুঝতে সাহায্য করে।<br>
+      <b>Raw Order</b> = website কত order আনছে।<br>
+      <b>Confirmed</b> = call center কত order validate করছে।<br>
+      <b>Delivered</b> = আসল business outcome.<br>
+      <b>Delivered CPA + Net Profit</b> = Tuktuk-এর জন্য সবচেয়ে গুরুত্বপূর্ণ decision metrics.</p>
+      <h3>3) Bottleneck map</h3>
+      <p>Low CTR → <b>Creative/Hook</b><br>
+      Good clicks but low landing views → <b>Website speed / page issue</b><br>
+      Good landing views but low ATC → <b>Product page / offer / trust</b><br>
+      Good ATC but low raw orders → <b>Checkout friction</b><br>
+      Good raw orders but low confirmation → <b>Lead quality / call center</b><br>
+      Good confirmation but low delivery → <b>RTO / courier / expectation mismatch</b><br>
+      Good delivery but low profit → <b>CPA / product cost / pricing</b></p>
+      <h3>4) Scale / Hold / Kill</h3>
+      <p>Simulator-এ decision target হিসেবে আপনার <b>Target CPA</b> এবং <b>Break-even CPA</b> ব্যবহার করা হয়েছে। ফলে অন্য কারও “৳200 CPA ভালো” কথার ওপর নির্ভর না করে নিজের economics দিয়ে বিচার করতে পারবেন.</p>
+      <h3>5) Common Short Forms</h3>
+      <p>
+      <span class="tag">CPM = Cost Per 1,000 Impressions</span>
+      <span class="tag">CTR = Click-Through Rate</span>
+      <span class="tag">CPC = Cost Per Click</span>
+      <span class="tag">CPA = Cost Per Acquisition</span>
+      <span class="tag">AOV = Average Order Value</span>
+      <span class="tag">ATC = Add to Cart</span>
+      <span class="tag">ROAS = Return on Ad Spend</span>
+      <span class="tag">RTO = Return to Origin</span>
+      </p>
+      <h3>6) Important</h3>
+      <p>এটি Meta-এর actual auction/optimization algorithm নয়। এটি business-learning model। Real campaign-এ attribution, learning phase, audience, creative quality, conversion tracking, auction competition, seasonality, placement, RTO ইত্যাদির কারণে ফল আলাদা হবে.</p>
+    </div>
+  </section>
+
+  <section id="quiz" class="panel">
+    <div class="card quiz">
+      <h2>🎯 Practice Quiz</h2>
+      <p class="hint">প্রথমে নিজে answer ভাবুন, তারপর Reveal চাপুন.</p>
+      <div class="card"><b>Q1. CTR ভালো কিন্তু Delivered Order কম। প্রথমে কী দেখবেন?</b><button class="tab reveal">Answer দেখুন</button><div class="answer">Website → ATC → Raw Order → Confirmation → Delivery funnel কোথায় drop করছে সেটা দেখবেন.</div></div>
+      <div class="card"><b>Q2. Raw Order 20, Confirmed 10, Delivered 8 হলে business judge করবেন কোন সংখ্যায়?</b><button class="tab reveal">Answer দেখুন</button><div class="answer">Delivered = 8. কারণ COD business-এ raw order থেকে revenue/profit তখনই বাস্তব হয় যখন order delivered হয়.</div></div>
+      <div class="card"><b>Q3. Delivered CPA break-even CPA-এর চেয়ে বেশি হলে?</b><button class="tab reveal">Answer দেখুন</button><div class="answer">Unit economics অনুযায়ী campaign loss-making হওয়ার ঝুঁকি বেশি। CPA কমানো, AOV/offer বাড়ানো, cost কমানো বা product economics বদলাতে হবে.</div></div>
+    </div>
+  </section>
+</div>
+
+<footer class="credit-footer"><strong>© Copyright Tipu</strong> · All Rights Reserved.<br>Designed and developed by Tipu. Unauthorized copying, redistribution, or resale of this tool without permission is prohibited.</footer>
+
+<script>
+const ids=['hook','broad','comp','fatigue','lpq','offer','confirm','delivery','budget','aov','pcost','dcost','fee','other','targetOrders','targetCPA'];
+const money=n=>'৳'+Math.round(n).toLocaleString('en-US');
+const num=n=>Math.round(n).toLocaleString('en-US');
+let objective='Sales';
+
+const objectiveConfig={
+ Awareness:{signal:'Reach / awareness',business:'Brand exposure',ctr:.65,purchase:.25,note:'Reach ও awareness-এর জন্য; direct sales simulator-এ ইচ্ছাকৃতভাবে কম purchase efficiency ধরা হয়েছে.'},
+ Traffic:{signal:'Clicks / landing page visits',business:'Website traffic',ctr:1.08,purchase:.55,note:'Cheap traffic আসতে পারে, কিন্তু traffic নিজে sales guarantee করে না.'},
+ Engagement:{signal:'Engagement / video interaction',business:'Content engagement',ctr:1.02,purchase:.45,note:'Engagement বাড়লেও buyer intent সবসময় high নাও হতে পারে.'},
+ Leads:{signal:'Lead submission',business:'Lead generation',ctr:.92,purchase:.80,note:'Lead-focused flow; website purchase objective-এর মতো direct নয়.'},
+ Sales:{signal:'Purchase / conversion',business:'Website sales',ctr:1.00,purchase:1.00,note:'Tuktuk-এর website sales goal-এর জন্য primary recommendation.'},
+ Messages:{signal:'Messaging conversations',business:'Chat / conversation sales',ctr:1.00,purchase:.65,note:'Messenger/WhatsApp-type conversation flow হলে useful; website purchase-এর জন্য direct নয়.'}
+};
+
+function v(id){return +document.getElementById(id).value}
+function setText(id,t){document.getElementById(id).textContent=t}
+function fmt(x){return Number.isFinite(x)?x.toFixed(2):'0.00'}
+
+function updateObjective(){
+  document.querySelectorAll('.obj button').forEach(b=>b.classList.toggle('active',b.dataset.objective===objective));
+  const c=objectiveConfig[objective];
+  document.getElementById('objectiveInfo').innerHTML=
+    `<b>Meta signal:</b> ${c.signal} &nbsp; • &nbsp; <b>Business goal:</b> ${c.business}<br>${c.note}`;
+}
+
+function calculate(){
+  ids.forEach(id=>setText(id+'Val', ['budget','aov','pcost','dcost','other','targetCPA'].includes(id)?money(v(id)): (id==='fee'?v(id).toFixed(1)+'%':v(id)+'%')));
+  const hook=v('hook'), broad=v('broad'), comp=v('comp'), fatigue=v('fatigue'), lpq=v('lpq'), offer=v('offer');
+  const confirm=v('confirm')/100, delivery=v('delivery')/100, budget=v('budget'), aov=v('aov'), pcost=v('pcost'), dcost=v('dcost'), fee=v('fee')/100, other=v('other');
+  const obj=objectiveConfig[objective];
+
+  const quality=(hook*.45+lpq*.25+offer*.10+(100-fatigue)*.20)/100;
+  let cpm=240+comp*2.7+fatigue*1.25-broad*.85-quality*70;
+  cpm=Math.max(70,cpm);
+  let ctr=(.35+hook*.022-fatigue*.006+offer*.003+broad*.001)*obj.ctr;
+  ctr=Math.max(.12,ctr);
+  const impressions=budget/cpm*1000;
+  const clicks=impressions*ctr/100;
+  const lpRate=.62+lpq*.0035;
+  const lp=clicks*lpRate;
+  const atcRate=(.045+offer*.0022+lpq*.0007)*obj.purchase;
+  const atc=lp*atcRate;
+  const orderRate=(.07+offer*.0031+lpq*.001)*obj.purchase;
+  const raw=atc*orderRate;
+  const confirmed=raw*confirm;
+  const delivered=confirmed*delivery;
+  const revenue=delivered*aov;
+  const totalCost=budget+delivered*pcost+confirmed*dcost+revenue*fee+delivered*other;
+  const profit=revenue-totalCost;
+  const realCPA=delivered?budget/delivered:Infinity;
+  const contributionPerDelivered=aov-pcost-(dcost/delivery)-aov*fee-other;
+  const beCPA=Math.max(0,contributionPerDelivered);
+  const beROAS=contributionPerDelivered>0?aov/contributionPerDelivered:Infinity;
+  const roas=budget?revenue/budget:0;
+  const profitPer=delivered?profit/delivered:0;
+  const adPct=revenue?budget/revenue*100:0;
+  const targetOrders=v('targetOrders'), targetCPA=v('targetCPA');
+  const requiredBudget=targetOrders*targetCPA;
+  const neededVsCurrent=delivered?targetOrders/delivered:Infinity;
+
+  setText('impressions',num(impressions));setText('clicks',num(clicks));setText('raw',fmt(raw));
+  setText('delivered',fmt(delivered));setText('revenue',money(revenue));setText('totalCost',money(totalCost));
+  setText('profit',money(profit));setText('realCPA',Number.isFinite(realCPA)?money(realCPA):'—');
+  const profitEl=document.getElementById('profit');
+  profitEl.classList.remove('green','red'); profitEl.classList.add(profit>=0?'green':'red');
+  const costEl=document.getElementById('totalCost');
+  costEl.classList.remove('green','red'); costEl.classList.add('red');
+  setText('beCPA',money(beCPA));setText('beROAS',Number.isFinite(beROAS)?fmt(beROAS)+'x':'—');
+  setText('profitPer',money(profitPer));setText('adPct',fmt(adPct)+'%');
+  const pp=document.getElementById('profitPer');
+  pp.classList.remove('green','red'); pp.classList.add(profitPer>=0?'green':'red');
+  setText('confirmOut',fmt(confirm*100)+'%');setText('deliveryOut',fmt(delivery*100)+'%');
+
+  const max=impressions||1;
+  [['bImp',impressions],['bClick',clicks],['bLP',lp],['bATC',atc],['bRaw',raw],['bConf',confirmed],['bDel',delivered]].forEach(([id,n])=>{
+    document.getElementById(id).style.width=Math.max(2,Math.min(100,n/max*100))+'%';
+  });
+  setText('fImp',num(impressions));setText('fClick',num(clicks));setText('fLP',fmt(lp));setText('fATC',fmt(atc));
+  setText('fRaw',fmt(raw));setText('fConf',fmt(confirmed));setText('fDel',fmt(delivered));
+
+  setText('rev7',money(revenue*7));setText('prof7',money(profit*7));setText('rev30',money(revenue*30));setText('prof30',money(profit*30));
+  setText('del7',fmt(delivered*7));setText('del30',fmt(delivered*30));
+
+  // Detailed business cost breakdown
+  const adCost=budget;
+  const productPurchaseCost=delivered*pcost;
+  const deliveryCost=confirmed*dcost;
+  const platformFeeCost=revenue*fee;
+  const otherBusinessCost=delivered*other;
+  const dailyBusinessCost=adCost+productPurchaseCost+deliveryCost+platformFeeCost+otherBusinessCost;
+  const setCost=(id,val)=>setText(id,money(val));
+  [['adCostD',adCost],['adCost7',adCost*7],['adCost30',adCost*30],
+   ['prodCostD',productPurchaseCost],['prodCost7',productPurchaseCost*7],['prodCost30',productPurchaseCost*30],
+   ['shipCostD',deliveryCost],['shipCost7',deliveryCost*7],['shipCost30',deliveryCost*30],
+   ['feeCostD',platformFeeCost],['feeCost7',platformFeeCost*7],['feeCost30',platformFeeCost*30],
+   ['otherCostD',otherBusinessCost],['otherCost7',otherBusinessCost*7],['otherCost30',otherBusinessCost*30],
+   ['totalCostD',dailyBusinessCost],['totalCost7',dailyBusinessCost*7],['totalCost30',dailyBusinessCost*30]
+  ].forEach(([id,val])=>setCost(id,val));
+
+  // Diagnosis
+  let diagnosis;
+  if(ctr<1) diagnosis={cls:'kill',title:'Creative bottleneck',body:`CTR প্রায় ${fmt(ctr)}%। Hook/video/offer-এর প্রথম 2–3 sec improve করুন.`};
+  else if(lpRate<.72) diagnosis={cls:'hold',title:'Landing Page bottleneck',body:`Click আসছে, কিন্তু landing-view efficiency কম। Page speed, mobile UX, product proof দেখুন.`};
+  else if(atcRate<.065) diagnosis={cls:'hold',title:'Offer / Product Page bottleneck',body:`Visitor আছে কিন্তু ATC weak। Price, benefit, trust, reviews, urgency পরীক্ষা করুন.`};
+  else if(confirm<.65) diagnosis={cls:'hold',title:'Confirmation bottleneck',body:`Raw order থেকে confirmation কম। Call timing, script, fake/low-intent orders, lead quality দেখুন.`};
+  else if(delivery<.75) diagnosis={cls:'hold',title:'Delivery / RTO bottleneck',body:`Confirmed order থেকে delivery কম। Courier, expectation setting, address quality, confirmation process দেখুন.`};
+  else if(realCPA>beCPA) diagnosis={cls:'kill',title:'Unit economics bottleneck',body:`Delivered CPA ${money(realCPA)} বনাম break-even ${money(beCPA)}। Ads scale করার আগে economics ঠিক করুন.`};
+  else diagnosis={cls:'scale',title:'Healthy funnel',body:`Funnel ও economics এখন positive। Winner creative ধরে controlled scaling test করতে পারেন.`};
+  document.getElementById('diagnosis').className='action '+diagnosis.cls;
+  document.getElementById('diagnosis').innerHTML=`<strong>${diagnosis.title}</strong><br>${diagnosis.body}`;
+
+  // Decision
+  let decision, dcls;
+  if(profit<=0 || realCPA>beCPA){decision='🛑 KILL / FIX — এখন budget বাড়াবেন না.';dcls='kill'}
+  else if(realCPA<=targetCPA && delivered>=targetOrders){decision='🟢 SCALE — target CPA-এর মধ্যে এবং target delivery achieved.';dcls='scale'}
+  else if(realCPA<=targetCPA){decision='🟡 HOLD / OPTIMIZE — CPA target-এর মধ্যে, কিন্তু volume target এখনো হয়নি.';dcls='hold'}
+  else {decision='🟠 HOLD — CPA target-এর ওপরে; creative/funnel improve করুন.';dcls='hold'}
+  document.getElementById('decision').className='action '+dcls;
+  document.getElementById('decision').innerHTML=`<strong>${decision}</strong><br>Current delivered CPA: ${Number.isFinite(realCPA)?money(realCPA):'—'} • Target CPA: ${money(targetCPA)} • Target delivered/day: ${targetOrders}<br>Target orders-এর জন্য আনুমানিক budget: <b>${money(requiredBudget)}</b> (শুধু target CPA ধরে simple estimate)।`;
+
+  // Causality
+  const logs=[
+    `Objective = <b>${objective}</b> → modeled signal: <b>${obj.signal}</b>.`,
+    `CPM (Cost Per 1,000 Impressions) ≈ <b>${money(cpm)}</b>; competition ${comp}% ও fatigue ${fatigue}% CPM-এ চাপ দিচ্ছে.`,
+    `CTR (Click-Through Rate) ≈ <b>${fmt(ctr)}%</b>; Hook ${hook}, Offer ${offer}, Broadness ${broad} এবং objective effect এখানে কাজ করছে.`,
+    `Clicks → LPV: <b>${fmt(lpRate*100)}%</b>; LP quality ${lpq} হলে landing efficiency বাড়ছে.`,
+    `LPV → ATC ≈ <b>${fmt(atcRate*100)}%</b>; Offer/Product-page quality বড় driver.`,
+    `Raw → Confirmed = <b>${fmt(confirm*100)}%</b>; Confirmed → Delivered = <b>${fmt(delivery*100)}%</b>.`,
+    `Delivered CPA = <b>${Number.isFinite(realCPA)?money(realCPA):'—'}</b>; Break-even CPA ≈ <b>${money(beCPA)}</b>.`,
+    `Revenue ${money(revenue)} − total cost ${money(totalCost)} = <b>${money(profit)} net profit/day</b>.`
+  ];
+  document.getElementById('log').innerHTML=logs.map(x=>`<div>${x}</div>`).join('');
+}
+
+function preset(type){
+  const vals={
+    bad:{hook:35,broad:35,comp:80,fatigue:70,lpq:55,offer:40,confirm:55,delivery:65,budget:1000,aov:800,pcost:400,dcost:100,fee:1,other:30,targetOrders:10,targetCPA:250},
+    normal:{hook:70,broad:65,comp:55,fatigue:25,lpq:85,offer:70,confirm:80,delivery:85,budget:1000,aov:900,pcost:350,dcost:80,fee:1,other:20,targetOrders:10,targetCPA:250},
+    winner:{hook:90,broad:75,comp:40,fatigue:10,lpq:95,offer:85,confirm:88,delivery:92,budget:2000,aov:1000,pcost:350,dcost:75,fee:.8,other:15,targetOrders:20,targetCPA:220},
+    reset:{hook:70,broad:65,comp:55,fatigue:25,lpq:85,offer:70,confirm:80,delivery:85,budget:1000,aov:900,pcost:350,dcost:80,fee:1,other:20,targetOrders:10,targetCPA:250}
+  }[type];
+  Object.entries(vals).forEach(([k,val])=>document.getElementById(k).value=val);
+  objective='Sales';updateObjective();calculate();
+}
+
+document.querySelectorAll('input[type=range],input.manual').forEach(el=>el.addEventListener('input',calculate));
+document.querySelectorAll('.obj button').forEach(btn=>btn.addEventListener('click',()=>{objective=btn.dataset.objective;updateObjective();calculate()}));
+document.querySelectorAll('.preset').forEach(btn=>btn.addEventListener('click',()=>preset(btn.dataset.preset)));
+document.querySelectorAll('.tab').forEach(btn=>{
+  if(btn.classList.contains('reveal')) return;
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+document.querySelectorAll('.reveal').forEach(btn=>btn.addEventListener('click',()=>{const a=btn.nextElementSibling;a.style.display=a.style.display==='block'?'none':'block'}));
+updateObjective();calculate();
+
+// ===== V6 business tools: local persistence, product economics, cash flow, actual tracking, comparisons, exports =====
+const STORE_KEY='tuktuk_meta_ads_v6_data';
+const state={products:[],cash:[],actual:[],notes:''};
+function loadState(){try{const x=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');state.products=Array.isArray(x.products)?x.products:[];state.cash=Array.isArray(x.cash)?x.cash:[];state.actual=Array.isArray(x.actual)?x.actual:[];state.notes=x.notes||'';}catch(e){console.warn('Could not load saved V6 data',e)}}
+function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));return true}catch(e){alert('Browser storage is full or unavailable. Export a backup and remove old records.');return false}}
+function val(id){return Math.max(0,Number(document.getElementById(id).value)||0)}
+function text(id,value){const el=document.getElementById(id);if(el)el.textContent=value}
+function money0(n){return '৳'+Math.round(Number(n)||0).toLocaleString('en-US')}
+function today(){return new Date().toISOString().slice(0,10)}
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function calcProductData(){const price=val('pPrice'),cost=val('pCost'),ad=val('pAd'),ship=val('pShip'),pack=val('pPack'),fee=val('pFee')/100,other=val('pOther'),rto=val('pRto');const feeAmt=price*fee;const total=cost+ad+ship+pack+feeAmt+other+rto;const net=price-total;const breakPrice=(cost+ad+ship+pack+other+rto)/(1-fee||1);const maxCPA=price-cost-ship-pack-feeAmt-other-rto;text('pNet',money0(net));text('pMargin',(price?((net/price)*100):0).toFixed(1)+'%');text('pBreak',money0(breakPrice));text('pMaxCPA',money0(Math.max(0,maxCPA)));document.getElementById('pNet').className=net>=0?'positive':'negative';text('productMsg',`Product: ${document.getElementById('pName').value||'Unnamed product'} • Total cost per delivered order: ${money0(total)} • Net profit: ${money0(net)}. ${net<0?'এই দামে আনুমানিক লোকসান—price/cost/CPA ঠিক করুন.':'এই হিসাব অনুযায়ী unit economics positive; actual return/RTO ও অন্যান্য খরচ যাচাই করুন.'}`);return {name:document.getElementById('pName').value.trim()||'Unnamed product',price,cost,ad,ship,pack,feePercent:fee*100,other,rto,totalCost:total,net,margin:price?net/price*100:0,breakEvenPrice:breakPrice,maxBreakEvenCPA:Math.max(0,maxCPA)}}
+function renderProducts(){const el=document.getElementById('productTable');if(!state.products.length){el.innerHTML='<div class="empty">No saved products yet.</div>';return}el.innerHTML='<table><thead><tr><th>Product</th><th>Price</th><th>Total Cost</th><th>Net Profit</th><th>Margin</th><th></th></tr></thead><tbody>'+state.products.map((p,i)=>`<tr><td>${esc(p.name)}</td><td>${money0(p.price)}</td><td>${money0(p.totalCost)}</td><td class="${p.net>=0?'positive':'negative'}">${money0(p.net)}</td><td>${Number(p.margin||0).toFixed(1)}%</td><td><button class="btn danger" onclick="deleteProduct(${i})">Delete</button></td></tr>`).join('')+'</tbody></table>'}
+window.deleteProduct=i=>{state.products.splice(i,1);persist();renderProducts();renderReport()};
+function calcCashData(){const capital=val('cCapital'),stock=val('cStock'),ads=val('cAds'),ops=val('cOps'),other=val('cOther'),received=val('cReceived'),pending=val('cPending'),payable=val('cPayable'),override=document.getElementById('cCashOverride').value;const paid=stock+ads+ops+other;const available=override.trim()!==''?val('cCashOverride'):Math.max(0,capital+received-paid);const liquid=available+pending;const net=liquid-payable;text('cAvailable',money0(available));text('cPaid',money0(paid));text('cLiquid',money0(liquid));text('cNet',money0(net));text('cashMsg',`Starting capital ${money0(capital)} + received ${money0(received)} − paid costs ${money0(paid)} = estimated cash ${money0(Math.max(0,capital+received-paid))}. ${override.trim()!==''?'You supplied a manual cash override, so Available Cash uses that value. ':''}Pending COD is shown separately; do not count it as received cash until payout arrives.`);return {date:today(),capital,stock,ads,ops,other,received,pending,payable,paid,available,liquid,net}}
+function renderCash(){const el=document.getElementById('cashTable');if(!state.cash.length){el.innerHTML='<div class="empty">No snapshots saved.</div>';return}el.innerHTML='<table><thead><tr><th>Date</th><th>Capital</th><th>Paid Out</th><th>Cash</th><th>COD Pending</th><th>Net Position</th><th></th></tr></thead><tbody>'+state.cash.map((c,i)=>`<tr><td>${esc(c.date)}</td><td>${money0(c.capital)}</td><td>${money0(c.paid)}</td><td>${money0(c.available)}</td><td>${money0(c.pending)}</td><td>${money0(c.net)}</td><td><button class="btn danger" onclick="deleteCash(${i})">Delete</button></td></tr>`).join('')+'</tbody></table>'}
+window.deleteCash=i=>{state.cash.splice(i,1);persist();renderCash();renderReport()};
+function actualFromForm(){const revenue=val('aRevenue'),spend=val('aSpend'),raw=val('aRaw'),confirmed=val('aConfirmed'),delivered=val('aDelivered'),cancelled=val('aCancelled'),returned=val('aReturned'),pcost=val('aProductCost'),dcost=val('aDeliveryCost'),pack=val('aPackaging'),fee=val('aFee')/100,other=val('aOther'),rtoCost=val('aRtoCost');const productCost=delivered*pcost,deliveryCost=confirmed*dcost,packCost=delivered*pack,feeCost=revenue*fee,otherCost=delivered*other,totalCost=spend+productCost+deliveryCost+packCost+feeCost+otherCost+rtoCost,profit=revenue-totalCost;return {date:document.getElementById('aDate').value||today(),campaign:document.getElementById('aCampaign').value.trim()||'Unnamed campaign',spend,revenue,raw,confirmed,delivered,cancelled,returned,productCostPerDelivered:pcost,deliveryCostPerConfirmed:dcost,packagingPerDelivered:pack,feePercent:fee*100,otherPerDelivered:other,rtoCost,productCost,deliveryCost,packCost,feeCost,otherCost,totalCost,profit,profitPerDelivered:delivered?profit/delivered:0,deliveredCPA:delivered?spend/delivered:null,roas:spend?revenue/spend:null,confirmRate:raw?confirmed/raw*100:0,deliveryRate:confirmed?delivered/confirmed*100:0,rtoRate:confirmed?returned/confirmed*100:0}}
+function renderActual(){const el=document.getElementById('actualTable');if(!state.actual.length){el.innerHTML='<div class="empty">No actual records saved yet.</div>';return}el.innerHTML='<table><thead><tr><th>Date</th><th>Campaign / Product</th><th>Spend</th><th>Revenue</th><th>Delivered</th><th>Delivered CPA</th><th>Total Cost</th><th>Net Profit</th><th></th></tr></thead><tbody>'+state.actual.map((a,i)=>`<tr><td>${esc(a.date)}</td><td>${esc(a.campaign)}</td><td>${money0(a.spend)}</td><td>${money0(a.revenue)}</td><td>${a.delivered}</td><td>${a.deliveredCPA==null?'—':money0(a.deliveredCPA)}</td><td>${money0(a.totalCost)}</td><td class="${a.profit>=0?'positive':'negative'}">${money0(a.profit)}</td><td><button class="btn danger" onclick="deleteActual(${i})">Delete</button></td></tr>`).join('')+'</tbody></table>'}
+window.deleteActual=i=>{state.actual.splice(i,1);persist();renderActual();renderCompare();renderReport()};
+function previewActual(a){text('actualPreview',`${a.date} • ${a.campaign}: Revenue ${money0(a.revenue)} − total estimated cost ${money0(a.totalCost)} = ${money0(a.profit)} net profit. Delivered CPA ${a.deliveredCPA==null?'—':money0(a.deliveredCPA)} • ROAS ${a.roas==null?'—':a.roas.toFixed(2)+'x'} • Confirmation ${a.confirmRate.toFixed(1)}% • Delivery success ${a.deliveryRate.toFixed(1)}% • RTO ${a.rtoRate.toFixed(1)}%.`)}
+function csvCell(v){const s=String(v??'');return '"'+s.replace(/"/g,'""')+'"'}
+function downloadBlob(name,content,type='text/csv;charset=utf-8;'){if(window.AndroidDownloadBridge&&window.AndroidDownloadBridge.saveText){window.AndroidDownloadBridge.saveText(name,type,'﻿'+content);return}const blob=new Blob(['﻿'+content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function exportRows(name,rows){if(!rows.length){alert('No data to export yet.');return}const keys=[...new Set(rows.flatMap(x=>Object.keys(x)))];const csv=[keys.map(csvCell).join(','),...rows.map(r=>keys.map(k=>csvCell(r[k])).join(','))].join('\r\n');downloadBlob(name,csv)}
+function renderCompare(){const el=document.getElementById('compareTable');const summary=document.getElementById('compareSummary');if(!state.actual.length){el.innerHTML='<div class="empty">Save actual campaign records first.</div>';summary.innerHTML='';text('actualProfitCompare','—');text('actualCpaCompare','—');text('actualRoasCompare','—');return}const sum=k=>state.actual.reduce((a,x)=>a+(Number(x[k])||0),0);const spend=sum('spend'),revenue=sum('revenue'),profit=sum('profit'),delivered=sum('delivered');summary.innerHTML=[['Total Ad Spend',money0(spend)],['Total Revenue',money0(revenue)],['Total Net Profit',money0(profit)],['Delivered Orders',delivered.toLocaleString('en-US')]].map(x=>`<div class="result"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');el.innerHTML='<table><thead><tr><th>Date</th><th>Campaign</th><th>Spend</th><th>Revenue</th><th>Delivered</th><th>Delivered CPA</th><th>ROAS</th><th>Net Profit</th></tr></thead><tbody>'+state.actual.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(a=>`<tr><td>${esc(a.date)}</td><td>${esc(a.campaign)}</td><td>${money0(a.spend)}</td><td>${money0(a.revenue)}</td><td>${a.delivered}</td><td>${a.deliveredCPA==null?'—':money0(a.deliveredCPA)}</td><td>${a.roas==null?'—':a.roas.toFixed(2)+'x'}</td><td class="${a.profit>=0?'positive':'negative'}">${money0(a.profit)}</td></tr>`).join('')+'</tbody></table>';const avgProfit=profit/state.actual.length,avgCpa=delivered?spend/delivered:null,roas=spend?revenue/spend:null;text('actualProfitCompare',money0(avgProfit));text('actualCpaCompare',avgCpa==null?'—':money0(avgCpa));text('actualRoasCompare',roas==null?'—':roas.toFixed(2)+'x');text('simProfitCompare',document.getElementById('profit').textContent)}
+function renderReport(){const spend=state.actual.reduce((s,a)=>s+a.spend,0),revenue=state.actual.reduce((s,a)=>s+a.revenue,0),profit=state.actual.reduce((s,a)=>s+a.profit,0),del=state.actual.reduce((s,a)=>s+a.delivered,0);const items=[['Saved Actual Records',state.actual.length],['Total Actual Ad Spend',money0(spend)],['Total Actual Revenue',money0(revenue)],['Total Actual Net Profit',money0(profit)],['Total Delivered Orders',del],['Saved Products / Cash Snapshots',state.products.length+' / '+state.cash.length]];document.getElementById('reportSummary').innerHTML=items.map(x=>`<div class="result"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}
+function refreshAll(){renderProducts();renderCash();renderActual();renderCompare();renderReport()}
+document.getElementById('calcProduct').addEventListener('click',calcProductData);document.getElementById('saveProduct').addEventListener('click',()=>{const p=calcProductData();p.savedAt=new Date().toISOString();state.products.push(p);persist();renderProducts();renderReport()});
+document.getElementById('calcCash').addEventListener('click',calcCashData);document.getElementById('saveCash').addEventListener('click',()=>{state.cash.push(calcCashData());persist();renderCash();renderReport()});
+document.getElementById('saveActual').addEventListener('click',()=>{const a=actualFromForm();previewActual(a);state.actual.push(a);persist();renderActual();renderCompare();renderReport()});
+document.getElementById('clearActualForm').addEventListener('click',()=>{['aCampaign','aSpend','aRevenue','aRaw','aConfirmed','aDelivered','aCancelled','aReturned','aProductCost','aDeliveryCost','aPackaging','aFee','aOther','aRtoCost'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('aDate').value=today();text('actualPreview','Form cleared. Enter actual values before saving.')});
+document.getElementById('deleteActualAll').addEventListener('click',()=>{if(confirm('Delete all actual records? Export a backup first if needed.')){state.actual=[];persist();refreshAll()}});
+document.getElementById('exportActual').addEventListener('click',()=>exportRows('tuktuk-actual-records.csv',state.actual));document.getElementById('exportAll').addEventListener('click',()=>exportRows('tuktuk-actual-records.csv',state.actual));document.getElementById('exportProducts').addEventListener('click',()=>exportRows('tuktuk-products.csv',state.products));document.getElementById('exportCash').addEventListener('click',()=>exportRows('tuktuk-cash-flow.csv',state.cash));
+document.getElementById('backupJson').addEventListener('click',()=>downloadBlob('tuktuk-v6-backup.json',JSON.stringify(state,null,2),'application/json'));
+document.getElementById('restoreJson').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d||!Array.isArray(d.actual)||!Array.isArray(d.products)||!Array.isArray(d.cash))throw new Error('Invalid backup format');if(!confirm('Restore backup? This will replace the current saved V6 data on this browser.'))return;state.actual=d.actual;state.products=d.products;state.cash=d.cash;state.notes=d.notes||'';persist();refreshAll();document.getElementById('businessNotes').value=state.notes;alert('Backup restored.')}catch(err){alert('Could not restore this backup JSON: '+err.message)}e.target.value=''});
+document.getElementById('saveNotes').addEventListener('click',()=>{state.notes=document.getElementById('businessNotes').value;persist();text('notesStatus','Notes saved in this browser.')});
+// Every simulator update also refreshes the cross-check card after the original calculator completes.
+const originalCalculate=calculate;calculate=function(){originalCalculate();if(document.getElementById('simProfitCompare')){text('simProfitCompare',document.getElementById('profit').textContent);if(state.actual.length)renderCompare()}};
+loadState();document.getElementById('aDate').value=today();document.getElementById('businessNotes').value=state.notes;refreshAll();calcProductData();calcCashData();
+
+</script>
+</body>
+</html>
